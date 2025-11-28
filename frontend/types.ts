@@ -18,6 +18,16 @@ export interface SpotifyArtistStat {
   image?: string;
 }
 
+export interface RecentTrack {
+  id: string;
+  title: string;
+  artist: string;
+  album: string;
+  coverUrl: string;
+  durationMs: number;
+  playedAt?: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'model' | 'system';

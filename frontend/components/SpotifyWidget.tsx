@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Song, SpotifyArtistStat } from "../types";
-import { fetchNowPlaying, fetchTopArtists } from "../services/spotify";
+import { RecentTrack, Song, SpotifyArtistStat } from "../types";
+import {
+  fetchListeningHistory,
+  fetchNowPlaying,
+  fetchTopArtists,
+} from "../services/spotify";
 
 interface SpotifyWidgetProps {
   variant?: "full" | "compact" | "minimal";
@@ -16,6 +20,10 @@ const SpotifyWidget: React.FC<SpotifyWidgetProps> = ({ variant = "full" }) => {
   const [artistsError, setArtistsError] = useState<string | null>(null);
   const [loadingNowPlaying, setLoadingNowPlaying] = useState(true);
   const [loadingArtists, setLoadingArtists] = useState(true);
+  const [recentTracks, setRecentTracks] = useState<RecentTrack[]>([]);
+  const [minutesListened, setMinutesListened] = useState<number | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -96,6 +104,35 @@ const SpotifyWidget: React.FC<SpotifyWidgetProps> = ({ variant = "full" }) => {
   }, []);
 
   useEffect(() => {
+    let active = true;
+
+    const loadHistory = async () => {
+      setLoadingHistory(true);
+      try {
+        const data = await fetchListeningHistory();
+        if (!active) return;
+        setRecentTracks(data.tracks);
+        setMinutesListened(data.minutesThisMonth);
+        setHistoryError(null);
+      } catch (error) {
+        if (!active) return;
+        setRecentTracks([]);
+        setMinutesListened(null);
+        setHistoryError("Unable to load listening history.");
+      } finally {
+        if (active) setLoadingHistory(false);
+      }
+    };
+
+    loadHistory();
+    const interval = setInterval(loadHistory, 180000);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!currentSong || !currentSong.isPlaying) return;
 
     const timer = setInterval(() => {
@@ -114,6 +151,17 @@ const SpotifyWidget: React.FC<SpotifyWidgetProps> = ({ variant = "full" }) => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+  const formatPlayedAt = (value?: string) => {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    return date.toLocaleString([], {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const headingColor = "text-neutral-400 dark:text-neutral-500";
@@ -244,50 +292,121 @@ const SpotifyWidget: React.FC<SpotifyWidgetProps> = ({ variant = "full" }) => {
 
       {/* Stats Section - Only shown in full variant */}
       {variant === "full" && (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <h3
-            className={`text-xs uppercase tracking-widest ${headingColor} mb-8 border-b border-neutral-100 dark:border-neutral-800 pb-2`}
-          >
-            Top Artists (This Month)
-          </h3>
-          {loadingArtists ? (
-            <p className="text-xs text-neutral-400">Fetching artists…</p>
-          ) : artists.length ? (
-            <div className="grid grid-cols-1 gap-1">
-              {artists.map((artist) => (
-                <div
-                  key={artist.id}
-                  className="flex items-center justify-between py-3 px-2 -mx-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors rounded-sm"
-                >
-                  <div className="flex items-center gap-6">
-                    <span className={`text-xs font-medium w-6 ${headingColor}`}>
-                      0{artist.rank}
-                    </span>
-                    <div>
-                      <p
-                        className={`text-sm md:text-base ${textColor} font-medium`}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-12">
+          <div>
+            <h3
+              className={`text-xs uppercase tracking-widest ${headingColor} mb-6 border-b border-neutral-100 dark:border-neutral-800 pb-2`}
+            >
+              Top Artists (This Month)
+            </h3>
+            {loadingArtists ? (
+              <p className="text-xs text-neutral-400">Fetching artists…</p>
+            ) : artists.length ? (
+              <div className="grid grid-cols-1 gap-0.5">
+                {artists.map((artist) => (
+                  <div
+                    key={artist.id}
+                    className="flex items-center justify-between py-2 px-2 -mx-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors rounded-sm"
+                  >
+                    <div className="flex items-center gap-4">
+                      <span
+                        className={`text-xs font-medium w-6 ${headingColor}`}
                       >
-                        {artist.name}
+                        0{artist.rank}
+                      </span>
+                      <div>
+                        <p
+                          className={`text-sm md:text-base ${textColor} font-medium`}
+                        >
+                          {artist.name}
+                        </p>
+                        <p className="text-[11px] text-neutral-400">
+                          {formattedArtistGenres(artist)}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                      {artist.followers.toLocaleString()} followers
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-neutral-400">
+                No listening data for this period.
+              </p>
+            )}
+            {artistsError && (
+              <p className="text-xs text-rose-500 mt-3">{artistsError}</p>
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-6 border-b border-neutral-100 dark:border-neutral-800 pb-2">
+              <h3
+                className={`text-xs uppercase tracking-widest ${headingColor}`}
+              >
+                Recent Plays
+              </h3>
+              <span className="text-[11px] uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
+                {minutesListened !== null
+                  ? `${minutesListened.toLocaleString()} min this month`
+                  : loadingHistory
+                  ? "Calculating…"
+                  : "No minutes tracked"}
+              </span>
+            </div>
+            {loadingHistory ? (
+              <p className="text-xs text-neutral-400">Fetching tracks…</p>
+            ) : recentTracks.length ? (
+              <div className="flex flex-col gap-1">
+                {recentTracks.map((track) => (
+                  <div
+                    key={track.id}
+                    className="flex items-center gap-4 py-2 px-2 -mx-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors rounded-sm"
+                  >
+                    {track.coverUrl ? (
+                      <img
+                        src={track.coverUrl}
+                        alt=""
+                        className="w-12 h-12 rounded-sm object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-sm bg-neutral-200 dark:bg-neutral-800" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className={`text-sm md:text-base ${textColor} font-medium truncate`}
+                      >
+                        {track.title}
                       </p>
-                      <p className="text-[11px] text-neutral-400">
-                        {formattedArtistGenres(artist)}
+                      <p className="text-[11px] text-neutral-400 truncate">
+                        {track.artist} · {track.album}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                        {track.durationMs
+                          ? formatTime(track.durationMs)
+                          : "--:--"}
+                      </p>
+                      <p className="text-[10px] text-neutral-400">
+                        {formatPlayedAt(track.playedAt)}
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                    {artist.followers.toLocaleString()} followers
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-neutral-400">
-              No listening data for this period.
-            </p>
-          )}
-          {artistsError && (
-            <p className="text-xs text-rose-500 mt-3">{artistsError}</p>
-          )}
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-neutral-400">
+                No recent plays captured.
+              </p>
+            )}
+            {historyError && (
+              <p className="text-xs text-rose-500 mt-3">{historyError}</p>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -19,6 +19,13 @@ export type TopArtistsResponse = {
   }[];
 };
 
+import { RecentTrack } from "../types";
+
+export type ListeningHistoryResponse = {
+  tracks: RecentTrack[];
+  minutesThisMonth: number;
+};
+
 export const fetchNowPlaying = async (
   signal?: AbortSignal
 ): Promise<NowPlayingResponse> => {
@@ -38,6 +45,18 @@ export const fetchTopArtists = async (
 
   if (!response.ok) {
     throw new Error(`Top artists request failed: ${response.status}`);
+  }
+
+  return response.json();
+};
+
+export const fetchListeningHistory = async (
+  signal?: AbortSignal
+): Promise<ListeningHistoryResponse> => {
+  const response = await fetch("/api/listening-history", { signal });
+
+  if (!response.ok) {
+    throw new Error(`Listening history request failed: ${response.status}`);
   }
 
   return response.json();
