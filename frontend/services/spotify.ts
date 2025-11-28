@@ -22,7 +22,7 @@ export type TopArtistsResponse = {
 export const fetchNowPlaying = async (
   signal?: AbortSignal
 ): Promise<NowPlayingResponse> => {
-  const response = await fetch("/now-playing", { signal });
+  const response = await fetch("/api/now-playing", { signal });
 
   if (!response.ok) {
     throw new Error(`Now playing request failed: ${response.status}`);
@@ -34,7 +34,7 @@ export const fetchNowPlaying = async (
 export const fetchTopArtists = async (
   signal?: AbortSignal
 ): Promise<TopArtistsResponse> => {
-  const response = await fetch("/top-artists", { signal });
+  const response = await fetch("/api/top-artists", { signal });
 
   if (!response.ok) {
     throw new Error(`Top artists request failed: ${response.status}`);
