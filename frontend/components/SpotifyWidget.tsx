@@ -227,7 +227,7 @@ const SpotifyWidget: React.FC<SpotifyWidgetProps> = ({ variant = "full" }) => {
         <div className="flex flex-col md:flex-row md:items-end gap-6 mb-6">
           <div className="flex-1 space-y-2">
             <div
-              className={`text-4xl md:text-5xl font-light tracking-tight ${textColor} leading-tight`}
+              className={`text-2xl md:text-3xl font-light tracking-tight ${textColor} leading-tight`}
             >
               {nowPlayingTitle}
             </div>
@@ -320,9 +320,6 @@ const SpotifyWidget: React.FC<SpotifyWidgetProps> = ({ variant = "full" }) => {
                         >
                           {artist.name}
                         </p>
-                        <p className="text-[11px] text-neutral-400">
-                          {formattedArtistGenres(artist)}
-                        </p>
                       </div>
                     </div>
                     <span className="text-xs text-neutral-400 dark:text-neutral-500">
@@ -365,16 +362,6 @@ const SpotifyWidget: React.FC<SpotifyWidgetProps> = ({ variant = "full" }) => {
                     key={track.id}
                     className="flex items-center gap-4 py-2 px-2 -mx-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors rounded-sm"
                   >
-                    {track.coverUrl ? (
-                      <img
-                        src={track.coverUrl}
-                        alt=""
-                        className="w-12 h-12 rounded-sm object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-sm bg-neutral-200 dark:bg-neutral-800" />
-                    )}
                     <div className="flex-1 min-w-0">
                       <p
                         className={`text-sm md:text-base ${textColor} font-medium truncate`}
@@ -386,11 +373,6 @@ const SpotifyWidget: React.FC<SpotifyWidgetProps> = ({ variant = "full" }) => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                        {track.durationMs
-                          ? formatTime(track.durationMs)
-                          : "--:--"}
-                      </p>
                       <p className="text-[10px] text-neutral-400">
                         {formatPlayedAt(track.playedAt)}
                       </p>
