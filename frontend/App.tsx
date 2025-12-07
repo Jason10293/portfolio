@@ -1,13 +1,12 @@
-
-import React from 'react';
-import { RouterProvider, RouteRenderer, RouteConfig } from './lib/router';
-import Layout from './app/layout';
-import HomePage from './app/page';
-import MusicPage from './app/music/page';
-
+import React from "react";
+import { RouterProvider, RouteRenderer, RouteConfig } from "./lib/router";
+import Layout from "./app/layout";
+import HomePage from "./app/page";
+import MusicPage from "./app/music/page";
+import { Analytics } from "@vercel/analytics/next";
 const routes: RouteConfig = {
-  '/': HomePage,
-  '/music': MusicPage,
+  "/": HomePage,
+  "/music": MusicPage,
 };
 
 const App: React.FC = () => {
@@ -15,6 +14,7 @@ const App: React.FC = () => {
     <RouterProvider>
       <Layout>
         <RouteRenderer routes={routes} />
+        <Analytics />
       </Layout>
     </RouterProvider>
   );

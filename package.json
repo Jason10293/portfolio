@@ -4,6 +4,7 @@
     "@types/react-dom": "^19.2.3"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.6.1",
     "dotenv": "^17.2.3"
   }
 }
