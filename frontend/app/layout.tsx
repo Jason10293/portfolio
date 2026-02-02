@@ -140,6 +140,12 @@ export default function Layout({ children }: { children: ReactNode }) {
             >
               Music
             </Link>
+            <Link
+              href="/intramurals"
+              className="uppercase tracking-widest text-xs underline-offset-4 transition-colors"
+            >
+              Intramurals
+            </Link>
             <button
               type="button"
               aria-label="Toggle theme"

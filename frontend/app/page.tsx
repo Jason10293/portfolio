@@ -14,6 +14,12 @@ type ProjectSection = {
   projects: Project[];
 };
 
+const TechBadge = ({ tech }: { tech: string }) => (
+  <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+    {tech.trim()}
+  </span>
+);
+
 const ProjectCard = ({
   project,
   primaryText,
@@ -63,9 +69,11 @@ const ProjectCard = ({
       <p className={`${secondaryText} mb-2 leading-relaxed max-w-2xl`}>
         {project.description}
       </p>
-      <p className={`${accentText} text-xs uppercase tracking-wider`}>
-        {project.stack}
-      </p>
+      <div className="flex flex-wrap gap-1.5 mt-3">
+        {project.stack.split(",").map((tech) => (
+          <TechBadge key={tech} tech={tech} />
+        ))}
+      </div>
     </div>
   </article>
 );
@@ -94,10 +102,30 @@ const Page = () => {
       title: "personal projects",
       projects: [
         {
+          name: "Cloud Code Snippet Sharing Platform",
+          stack:
+            "React, Express.js, JavaScript, Python, PostgreSQL, AWS Lambda, Docker, GitHub Actions",
+          year: "2026",
+          link: "https://github.com/Jason10293/code-snippets",
+          description: `Built a full-stack code snippet manager allowing users to store, organize, and execute code snippets in multiple languages.
+            Leveraged AWS Lambda and SAM for serverless isolated code execution.
+            Set up an automated CI/CD pipeline with GitHub Actions and Docker to test builds and deploy images on each commit.
+            Engineered a RESTful API using Node.js and PostgreSQL with full CRUD functionality via raw SQL queries.`,
+        },
+        {
+          name: "Pokemon Higher Lower",
+          stack: "Next.js, TypeScript, Golang, PostgreSQL, Docker, Auth.js",
+          year: "2025 - present",
+          link: "https://github.com/Jason10293/Pokemon-Higher-Lower",
+          description: `Built a full-stack higher or lower guessing game using real Pokemon TCG card market prices.
+            Designed a Go backend API with chi router and PostgreSQL for serving over a thousand cards,
+            and a Next.js frontend with Auth.js authentication, Framer Motion animations, and responsive card layouts.`,
+        },
+        {
           name: "GO Backend API",
           stack: "Golang, PostgreSQL",
           year: "2025",
-          description: `Built a modular Go e-commerce API with versioned routes, JWT auth, and role based user and product management. 
+          description: `Built a modular Go e-commerce API with versioned routes, JWT auth, and role based user and product management.
             Integrated PostgreSQL through sqlc with automated migrations for safer, type checked queries.
              Reached over eighty percent test coverage using interface driven design, httptest mocks, and streamlined build workflows.`,
         },
@@ -115,8 +143,14 @@ const Page = () => {
 
   return (
     <div className="space-y-24 animate-[fadeIn_0.5s_ease-in-out]">
-      {/* Intro */}
-      <section className={secondaryText}>
+      {/* About Me */}
+      <section>
+        <p className={`${secondaryText} leading-relaxed max-w-2xl`}>
+          {/* Replace this with your own bio */}
+          Software developer and student that loves building full-stack
+          applications. Amateur volleyball and badminton player, intramural
+          regular, and addicted to solving 3x3's.
+        </p>
         {/* Contact Links */}
         <div className="flex gap-4 text-xs uppercase tracking-widest mt-6">
           <a
