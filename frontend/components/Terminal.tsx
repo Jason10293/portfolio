@@ -23,7 +23,7 @@ const COMMANDS: Record<string, string> = {
   contact:
     "Email: jason.wu@queensu.ca\nGitHub: github.com/Jason10293\nLinkedIn: linkedin.com/in/29jason-wu",
   projects:
-    "1. E-Commerce Dashboard\n2. Finance Tracker\n3. Generative AI Art Tool",
+    "1. Cubing Coach\n2. Budget Agent\n3. Cloud Code Snippet Sharing Platform\n4. Pokemon Higher Lower\n5. Go Backend API\n6. Redis Clone",
   sudo: 'Permission denied: User is not in the sudoers file. Try "meow".',
 };
 
@@ -42,7 +42,7 @@ const DEFAULT_RESPONSES = [
 
 const getFallbackResponse = (input: string) => {
   if (input.includes("project")) {
-    return "Projects online: E-Commerce Dashboard, Finance Tracker, Generative AI Art Tool.";
+    return "Projects online: Cubing Coach, Budget Agent, Cloud Code Snippets, Pokemon Higher Lower, Go Backend API, and Redis Clone.";
   }
   if (input.includes("contact")) {
     return "Contact options: Github, LinkedIn, or Email via the hero section.";

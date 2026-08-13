@@ -1,4 +1,4 @@
-import { getAccessToken } from "./_spotify.js";
+import { getAccessToken, spotifyErrorResponse } from "./_spotify.js";
 
 export default async function handler(req, res) {
   try {
@@ -12,10 +12,14 @@ export default async function handler(req, res) {
 
     if (!spotifyResponse.ok) {
       const message = await spotifyResponse.text();
-      console.error("Recently played error:", message);
+      console.error("Recently played error:", spotifyResponse.status, message);
       return res
         .status(502)
-        .json({ tracks: [], minutesThisMonth: 0 });
+        .json({
+          tracks: [],
+          minutesThisMonth: 0,
+          error: "SPOTIFY_API_REQUEST_FAILED",
+        });
     }
 
     const data = await spotifyResponse.json();
@@ -51,7 +55,9 @@ export default async function handler(req, res) {
       minutesThisMonth: Math.max(0, Math.round(monthMs / 60000)),
     });
   } catch (error) {
-    console.error("Listening history fetch failed:", error);
-    return res.status(500).json({ tracks: [], minutesThisMonth: 0 });
+    const response = spotifyErrorResponse(error);
+    return res
+      .status(response.status)
+      .json({ tracks: [], minutesThisMonth: 0, ...response.body });
   }
 }

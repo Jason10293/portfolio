@@ -102,6 +102,24 @@ const Page = () => {
       title: "personal projects",
       projects: [
         {
+          name: "Cubing Coach",
+          stack:
+            "Next.js, TypeScript, Python, Supabase, Web Bluetooth, Ollama, Docker",
+          year: "2026 - present",
+          link: "https://github.com/Jason10293/cubing-coach",
+          description: `Built a local-first CFOP training app that connects to GAN smart cubes, captures every turn, and reconstructs solves for interactive replay.
+            Developed deterministic analysis for phase splits, move efficiency, pauses, and search habits, then surfaced evidence-linked coaching alongside progress tracking and optional private AI explanations.`,
+        },
+        {
+          name: "Budget Agent",
+          stack:
+            "Node.js, Express.js, OpenAI, Sendblue, Google Sheets, Zod",
+          year: "2026 - present",
+          link: "https://github.com/Jason10293/budget-agent",
+          description: `Built an iMessage budgeting assistant that records expenses to Google Sheets and answers questions about totals, merchants, categories, largest purchases, and recent spending.
+            Added intent routing, structured tool calling, typing indicators, and multi-turn clarification so incomplete expense messages can be resolved conversationally before being saved.`,
+        },
+        {
           name: "Cloud Code Snippet Sharing Platform",
           stack:
             "React, Express.js, JavaScript, Python, PostgreSQL, AWS Lambda, Docker, GitHub Actions",
@@ -147,9 +165,9 @@ const Page = () => {
       <section>
         <p className={`${secondaryText} leading-relaxed max-w-2xl`}>
           {/* Replace this with your own bio */}
-          Software developer and student that loves building full-stack
-          applications. Amateur volleyball and badminton player, intramural
-          regular, and addicted to solving 3x3's.
+          Software developer and student who loves building full-stack
+          applications. Amateur volleyball and badminton player, seven-time
+          intramural champion, and addicted to solving 3x3s.
         </p>
         {/* Contact Links */}
         <div className="flex gap-4 text-xs uppercase tracking-widest mt-6">

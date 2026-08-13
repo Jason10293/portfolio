@@ -6,10 +6,10 @@ type Entry = {
 };
 
 const timeline: Entry[] = [
-  { season: "Winter 2026", sport: "Volleyball - Mixed Int", team: "hits and giggles", status: "current" },
-  { season: "Winter 2026", sport: "Futsal - Open Rec", team: "Watermelon", status: "current" },
-  { season: "Winter 2026", sport: "Handball - Mixed Rec", team: "Ball Busters", status: "current" },
-  { season: "Winter 2026", sport: "Multisport - Mixed Rec", team: "goblin gang", status: "current" },
+  { season: "Winter 2026", sport: "Volleyball - Mixed Int", team: "hits and giggles", status: "won" },
+  { season: "Winter 2026", sport: "Futsal - Open Rec", team: "Watermelon", status: "played" },
+  { season: "Winter 2026", sport: "Handball - Mixed Rec", team: "Ball Busters", status: "played" },
+  { season: "Winter 2026", sport: "Multisport - Mixed Rec", team: "goblin gang", status: "won" },
   { season: "Fall 2025", sport: "Volleyball - Mixed Comp", team: "Sloppy Joes", status: "won" },
   { season: "Fall 2025", sport: "Ultimate Frisbee - Open Comp", team: "Schr\u00F6dinger's Cat", status: "won" },
   { season: "Winter 2025", sport: "Volleyball - Mixed Rec", team: "Joes", status: "won" },
@@ -73,7 +73,7 @@ const IntramuralsPage = () => {
 
         <div className="space-y-10">
           {grouped.map(({ season, entries }, gi) => {
-            const isCurrent = entries[0]?.status === "current";
+            const isCurrent = entries.some((entry) => entry.status === "current");
             return (
               <div key={`${season}-${gi}`} className="relative pl-10">
                 {/* Timeline dot */}

@@ -1,4 +1,4 @@
-import { getAccessToken } from "./_spotify.js";
+import { getAccessToken, spotifyErrorResponse } from "./_spotify.js";
 
 export default async function handler(req, res) {
   try {
@@ -10,8 +10,17 @@ export default async function handler(req, res) {
       }
     );
 
-    if (spotifyResponse.status === 204 || spotifyResponse.status > 400) {
+    if (spotifyResponse.status === 204) {
       return res.status(200).json({ playing: false });
+    }
+
+    if (!spotifyResponse.ok) {
+      const message = await spotifyResponse.text();
+      console.error("Currently playing error:", spotifyResponse.status, message);
+      return res.status(502).json({
+        playing: false,
+        error: "SPOTIFY_API_REQUEST_FAILED",
+      });
     }
 
     const data = await spotifyResponse.json();
@@ -25,8 +34,7 @@ export default async function handler(req, res) {
       durationMs: data.item?.duration_ms,
     });
   } catch (error) {
-    console.error("Now playing error:", error);
-    return res.status(500).json({ playing: false, error: "Failed to load track." });
+    const response = spotifyErrorResponse(error);
+    return res.status(response.status).json({ playing: false, ...response.body });
   }
 }
-

@@ -1,4 +1,4 @@
-import { getAccessToken } from "./_spotify.js";
+import { getAccessToken, spotifyErrorResponse } from "./_spotify.js";
 
 export default async function handler(req, res) {
   try {
@@ -12,8 +12,10 @@ export default async function handler(req, res) {
 
     if (!spotifyResponse.ok) {
       const message = await spotifyResponse.text();
-      console.error("Top artists error:", message);
-      return res.status(502).json({ artists: [] });
+      console.error("Top artists error:", spotifyResponse.status, message);
+      return res
+        .status(502)
+        .json({ artists: [], error: "SPOTIFY_API_REQUEST_FAILED" });
     }
 
     const data = await spotifyResponse.json();
@@ -29,8 +31,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ artists });
   } catch (error) {
-    console.error("Top artists fetch failed:", error);
-    return res.status(500).json({ artists: [] });
+    const response = spotifyErrorResponse(error);
+    return res.status(response.status).json({ artists: [], ...response.body });
   }
 }
-
